@@ -1,0 +1,15 @@
+##!smake
+
+include /usr/include/make/commondefs
+
+LLDLIBS = -lglut -lGLU -lGL -lXmu -lXext -lX11 -lm
+LCFLAGS = -fullwarn
+CFILES  = signal.c trackball.c
+TARGETS = signal
+
+default		: $(TARGETS)
+
+include $(COMMONRULES)
+
+$(TARGETS)	: $(OBJECTS)
+	$(CCF) -o $@ $(OBJECTS) $(LDFLAGS)

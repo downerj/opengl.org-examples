@@ -1,0 +1,26 @@
+##!smake
+
+include /usr/include/make/commondefs
+
+LIBS    = -lglut -lGLU -lGL -lXmu -lXext -lX11 -lm
+CFILES  = distort.c ripple.c ripple_table.c rubber.c texture.c
+TARGETS = distort ripple_precalc
+
+default		: $(TARGETS)
+
+include $(COMMONRULES)
+
+distort		: $(OBJECTS)
+	$(CC) $(CFLAGS) -o $@ $(OBJECTS) $(LIBS)
+
+ripple_precalc	: $$@.o
+	$(CC) $(CFLAGS) -o $@ $@.o $(LIBS)
+
+ripple_table.c	: ripple_precalc
+	ripple_precalc > ripple_table.c
+
+# dependencies
+texture.o	: texture.h
+ripple.o	: ripple.h
+rubber.o	: rubber.h
+$(OBJECTS)	: defs.h

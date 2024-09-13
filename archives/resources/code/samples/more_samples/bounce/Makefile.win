@@ -1,0 +1,27 @@
+# Makefile for Win32 (nmake)
+
+!include <win32.mak>
+
+CFLAGS	= $(cflags) $(cdebug) -DWIN32
+LDLIBS	= $(lflags) $(ldebug) glut.lib glu.lib opengl.lib $(guilibs)
+CFILES	= bounce.c glui.c trackball.c
+TARGETS	= bounce.exe
+OBJECTS = $(CFILES:.c=.obj)
+
+default	: $(TARGETS)
+
+clean	:
+	@del *.obj
+	@del *~
+
+clobber	: 
+	@del *.exe
+
+$(TARGETS): $(OBJECTS)
+        $(link) -out:$@ $(OBJECTS) $(LDLIBS)
+.c.obj	: 
+	$(CC) $(CFLAGS) $<
+
+# dependencies (must come AFTER inference rules)
+trackball.obj	: trackball.h
+$(OBJECTS)	: glui.h

@@ -1,0 +1,11 @@
+##!smake
+
+include /usr/include/make/commondefs
+
+LLDLIBS = -lglut -lGLU -lGL -lXmu -lXext -lX11 -lm
+LCFLAGS = -fullwarn
+TARGETS = lorenz
+
+default		: $(TARGETS)
+
+include $(COMMONRULES)

@@ -1,0 +1,24 @@
+##!nmake
+
+!include <win32.mak>
+
+LCFLAGS	= $(cflags) $(cdebug) -DWIN32
+LLDLIBS	= $(lflags) $(ldebug) glut.lib glu.lib opengl.lib $(guilibs)
+CFILES	= cube.c
+TARGETS	= $(CFILES:.c=.exe)
+
+default	: $(TARGETS)
+
+clean	:
+	@del *.obj
+
+clobber	: 
+	@del *.exe
+
+$(TARGETS): $*.obj
+        $(link) -out:$@ $** $(LLDLIBS)
+
+.c.obj	: 
+	$(CC) $(LCFLAGS) $<
+
+# dependencies (must come AFTER inference rules)

@@ -1,0 +1,37 @@
+# Makefile for Win32 (nmake)
+
+
+!include <win32.mak>
+
+
+# defines
+CFLAGS	= $(cflags) $(cdebug) -DWIN32
+LIBS	= $(lflags) $(ldebug) glut.lib glu.lib opengl.lib $(guilibs)
+SRCS	= smooth.c
+EXES	= $(SRCS:.c=.exe)
+
+
+# default rule
+default	: $(EXES)
+
+
+# cleanup rules
+clean	:
+	@del *.obj
+	@del *~
+
+clobber	: 
+	@del *.exe
+
+
+# inference rules
+$(EXES)	: $*.obj
+        $(link) -out:$@ $** $(LIBS)
+.c.obj	: 
+	$(CC) $(CFLAGS) $<
+
+
+# dependencies (must come AFTER inference rules)
+smooth.exe	: glm.obj trackball.obj
+glm.obj		: glm.h
+trackball.obj	: trackball.h

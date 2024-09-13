@@ -1,0 +1,28 @@
+##!nmake
+
+!include <win32.mak>
+
+LIBS	= $(lflags) $(ldebug) glut.lib glu.lib opengl.lib winmm.lib $(guilibs)
+CFLAGS	= $(cflags) $(cdebug) -DWIN32 
+CFILES  = board.c gliq.c game.c pick.c score.c trackball.c
+TARGETS = gliq.exe
+OBJECTS = $(CFILES:.c=.obj)
+
+default		: $(TARGETS)
+
+$(TARGETS)	: $(OBJECTS)
+        $(link) -out:$@ $(OBJECTS) $(LIBS)
+
+clean		:
+	@del *.obj
+	@del *~
+
+clobber		: 
+	@del *.exe
+
+.c.obj		:
+	$(CC) $(CFLAGS) -c $<
+
+# dependencies
+trackball.obj	: trackball.h
+$(OBJECTS)	: gliq.h

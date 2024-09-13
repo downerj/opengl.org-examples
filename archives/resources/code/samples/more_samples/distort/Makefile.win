@@ -1,0 +1,33 @@
+##!nmake
+
+!include <win32.mak>
+
+LIBS	= $(lflags) $(ldebug) glut.lib glu.lib opengl.lib $(guilibs)
+CFLAGS	= $(cflags) $(cdebug) -DWIN32 
+CFILES  = distort.c ripple.c ripple_table.c rubber.c texture.c
+TARGETS = distort.exe ripple_precalc.exe
+OBJECTS = $(CFILES:.c=.obj)
+
+default		: $(TARGETS)
+
+distort.exe	: $(OBJECTS)
+        $(link) -out:$@ $(OBJECTS) $(LIBS)
+
+ripple_precalc.exe: $*.obj
+        $(link) -out:$@ $*.obj $(LIBS)
+
+clean		:
+	@del *.obj
+	@del *~
+
+clobber		: 
+	@del *.exe
+
+.c.obj		:
+	$(CC) $(CFLAGS) -c $<
+
+# dependencies
+texture.obj	: texture.h
+ripple.obj	: ripple.h
+rubber.obj	: rubber.h
+$(OBJECTS)	: defs.h

@@ -1,0 +1,62 @@
+
+     DISTORT(6D)               UNIX System V               DISTORT(6D)
+
+
+
+     NAME
+          distort - real time image distortion demo
+
+     SYNOPSIS
+          distort [imgfile]
+
+     DESCRIPTION
+          distort demonstrates how texture mapping can be used to pro-
+          duce  real  time image distortion effects.  This is achieved
+          by mapping a high resolution texture onto a large  array  of
+          polygons.
+
+          The imgfile argument is used to indicate the name of an  al-
+          ternate image file.
+
+          Use the left mouse button to select  one  of  the  following
+          distortion effects:
+
+          Ripple
+               This effect approximates looking at an image through  a
+               thin  layer  of  water.   The left mouse button can be
+               used to tap on the water, generating ripple patterns.
+
+          Rubber
+               The image is mapped onto a mesh of springs which behave
+               like  those  used  in  the jello demo.  The mesh can be
+               manipulated by holding down the right mouse button  and
+               dragging.
+
+          Press the ESC key to exit the program.
+
+     BUGS
+          Requires a hardware texturing or a  good  imagination.   The
+          source image must be square.
+
+     AUTHOR
+          Drew Olbrich
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+     Page 1                                          (printed 7/24/97)
+

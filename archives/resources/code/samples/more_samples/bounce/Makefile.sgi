@@ -1,0 +1,18 @@
+##!smake
+
+include /usr/include/make/commondefs
+
+LDLIBS  = -lglut -lGLU -lGL -lXmu -lXext -lX11 -lm
+CFILES  = bounce.c glui.c trackball.c
+TARGETS = bounce
+
+default		: $(TARGETS)
+
+include $(COMMONRULES)
+
+$(TARGETS)	: $(OBJECTS)
+	$(CC) $(CFLAGS) -o $@ $(OBJECTS) $(LDLIBS)
+
+# dependencies
+trackball.o	: trackball.h
+$(OBJECTS)	: glui.h
