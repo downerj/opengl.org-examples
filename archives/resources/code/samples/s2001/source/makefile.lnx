@@ -1,0 +1,59 @@
+#! gmake
+
+TARGETS = \
+	fog \
+	lightmaterial \
+	lightposition \
+	shapes \
+	texture \
+	transformation \
+	$(NULL)
+
+LIBS = -lglut -lGLU -lGL -lX11 -lXmu -lXext -lm
+
+#-----------------------------------------------------------------------------
+
+all: $(TARGETS)
+
+fog: fog.c glm.o
+	@echo --- $@ ---
+	cc $? $(LIBS) -o $@
+
+lightmaterial: lightmaterial.c glm.o
+	@echo --- $@ ---
+	cc $? $(LIBS) -o $@
+
+lightposition: lightposition.c glm.o
+	@echo --- $@ ---
+	cc $? $(LIBS) -o $@
+
+shapes: shapes.c
+	@echo --- $@ ---
+	cc $? $(LIBS) -o $@
+
+texture: texture.c glm.o sgi.o
+	@echo --- $@ ---
+	cc $? $(LIBS) -o $@
+
+transformation: transformation.c glm.o
+	@echo --- $@ ---
+	cc $? $(LIBS) -o $@
+
+.c.o: 
+	@echo --- $@ ---
+	cc -c $<
+
+#-----------------------------------------------------------------------------
+
+clean:
+	@echo --- $@ ---
+	rm -f *.o
+
+rmtargets:
+	@echo --- $@ ---
+	rm -f $(TARGETS)
+
+clobber: clean rmtargets
+	@echo --- $@ ---
+
+
