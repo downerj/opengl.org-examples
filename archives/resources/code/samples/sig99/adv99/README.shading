@@ -1,0 +1,131 @@
+makefiles are provided for IRIX, Linux, and Microsoft Windows.
+The windows build requires visual c++ or the cygnus cygwin tools.
+The visual c++ build uses nmake -f Makefile.win and the
+cygwin version uses make -f Makefile.cygwin
+
+Many programs use the texture file loading routines in the util
+subdirectory.  These routines read files in the SGI 'rgb' file
+format.
+
+Send bug fixes and comments to blythe@sgi.com
+
+
+shading/
+--------
+alphablend:	
+alphablendnosort:	
+		One partially transparent object orbits around another within an indoor scene.
+		The transparency is done using alpha blending.  In 'alphablendnosort' the objects
+		are not sorted by depth before rendering, creating an unusual effect when they are
+		drawn in the incorrect order.
+
+BRDF:		An illustration of the bidirectional reflection distribution function at a point
+		on a glossy sphere.  The distance that the mesh extends outward in any given direction
+		is proportional to the amount of light reflected in that direction.  The hemispherical
+		shape corresponds to the (view-independent) diffuse component, while the bulge
+		corresponds to the specular highlight that will be seen in those directions.
+
+anisolight:	Anisotropic reflection occurs from objects with with patterned rough surfaces such as
+		milled metal surfaces or satin balls.  To approximate the affect of anisotropic
+		reflection, the surface is covered with a series of line segments following the surface
+		pattern.  The lines are shaded using an illumination model which treats each line as
+		a cylinder.  Texture coordinate generation and texture mapping are used to evaluate
+		the illumination model at each pixel on each line.
+
+bumpmap:	Bump mapping is used to add detail to a textured surface.  The light source is rotated
+		into the tangent space of the surface at each vertex and lighting is calculated using
+		frame buffer operations including taking the difference of two shifted copies of
+		the bump texture.
+
+curvedrefl:	A checkerboard's reflection on a curved object is rendered interactively.  The
+		method is from Ofek & Rappoport's SIGGRAPH '98 paper, where a virtual object is
+		created by mirroring vertices across a subdivided reflector.
+
+dark:		A negative light source shines onto a surface nearby to a more normal light.  The
+		illumination-destroying effect is even more pronounced when using spotlights.
+
+displace:	Bump mapping through per-vertex normal perturbation is demonstrated, with or
+		without also displacing the surface vertices.  Forward differences are calculated
+		from a height map to provide a vector perturbation to per-vertex normals.  This
+		changes the result of the OpenGL lighting equation to approximate how the surface
+		would be lit if it had actually been displaced by the bumpmap.
+
+envmap:
+envmap2:	A complicated scene is reflected in a shiny teapot (or sphere).  The reflections
+		are drawn using an environment map, a spherical texture that produces a good effect
+		as long as the reflected objects are a fair distance away.  In 'envmap2', switching
+		between the two texture map shows the difference between not having fresnel correction
+		and having it.
+
+glossmap:	A polygon gives the appearance of being covered with puddles of water due to
+		its surface having an irregular glossy finish.  The polygon is rendered in two passes 
+		by blending together diffuse lighting with texture-modulated specular lighting.
+
+highlight:	Specular highlights are generated on the surface of an object.  The highlights
+		can be generated in one of two ways, either through OpenGL's specularity
+		calculations or through the use of a highlight texture map.
+
+lightmap2d:	A light map is used to simulate the effect of a local light source without
+		requiring excessive tessellation.  The light map is a 2D modulation texture that
+		has a bright spot with radial falloff.  The texture matrix is used to control the
+		position and intensity of the bright spot.
+
+lighttessel:	See how the lighting on a surface varies with its tessellation.  Pixel lighting
+		is interpolated between values computed at the vertices, so if vertices sample the
+		surface too sparsely then lighting effects may be missed.
+
+materials:	A number of different materials are shown on the teapot primitive.  Varied specular
+		colors and shininess parameters create the effect of different surface properties.
+
+mirror:		Reflections are drawn in a scene with multiple planar mirrors.  Reflected versions
+		of the whole scene are drawn using the stencil buffer to control where they will
+		show through into the final image.
+
+perspective:	OpenGL's use of non-perspective correct color interpolation is illustrated by
+		a gradient on a long polygon.  As the polygon is rotated to extend across a larger
+		depth range, the interpolation remains linear in screen space rather than object space.
+
+projshadow:	Objects in a room throw shadows onto the walls and floor due to a nearby light
+		source.  The shadows are rendered as dark-colored copies of scene objects that
+		have been projected onto the planar walls of the room.
+
+screendoor:	One partially transparent object orbits around another within an indoor scene.
+		The transparency is done using polygon stippling, a method known as "screen door
+		transparency".
+
+shadowvol:	Shadows are generated in a room scene through the use of a shadow volume.  The
+		scene is first drawn in shadow, the shape of the volume is determined using the
+		non-zero winding rule and drawn into the stencil buffer, and then the lit scene
+		is drawn into the non-shadowed areas.
+
+shadtex:	Shadows are generated in a room scene through the use of shadow maps.  The
+		scene is first rendered from the point of view of the light source and the
+		depth buffer is read back as a texture.  That texture is then mapped onto the
+		scene in eye space and the texel values and r-coordinates are compared to
+		determine whether each pixel is in shadow.
+
+sm_cview2smap:
+sm_sixviews:
+sm_smapmesh:	Sphere/cube mapping examples.  In 'sm_sixviews' six cube face views are shown
+		that are taken from the perspective of the center of a group of objects.  The
+		demo 'sm_cview2smap' shows how to warp the 6 views of a cube map into a sphere
+		map, while 'sm_smapmesh' uses a warp mesh to compute the opposite transformation
+		(a sphere map into a cube map).
+
+spheremap:	
+multispheremap:	A sphere reflects its surroundings as it moves around the interior of a room.
+		The mapping is done using texture coordinate generation with the sphere-mapping
+		function (GL_SPHERE_MAP).  In 'multispheremap' two such moving spheres reflect
+		both the room and each other.
+
+spheres:	The different components of the OpenGL lighting model can be viewed on a set of
+		spheres.  Turn them on individually or in groups to view the contribution of each.
+
+spotlight:	A spotlight is shown along with a translucent cone corresponding to the spread
+		angle of its beam.  Notice (as in the case of the teapot handle) that anything
+		within the cone that is front-facing with respect to the light will be illuminated,
+		regardless of occluders.
+
+triangles:	Interpolation effects are shown in a quad with four very different colors at the
+		vertices.  Notice the wild difference in resulting colors near the middle of the
+		quad depending upon which two triangles are rendered.

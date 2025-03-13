@@ -1,0 +1,13 @@
+makefiles are provided for IRIX, Linux, and Microsoft Windows.
+The windows build requires visual c++ or the cygnus cygwin tools.
+The visual c++ build uses nmake -f Makefile.win and the
+cygwin version uses make -f Makefile.cygwin
+
+Many programs use the texture file loading routines in the util
+subdirectory.  These routines read files in the SGI 'rgb' file
+format.
+
+Send bug fixes and comments to blythe@sgi.com
+
+
+

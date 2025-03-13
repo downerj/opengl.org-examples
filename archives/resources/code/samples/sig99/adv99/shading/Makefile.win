@@ -1,0 +1,53 @@
+##!nmake
+
+!include <win32.mak>
+
+OPENGL = glut32.lib glu32.lib opengl32.lib
+GLUT = "c:/PROGRA~1/devstudio/vc/include/GL"
+
+SPHERE_MAP_CFILES = sm_sixviews.c sm_st2rvec.c sm_smapmesh.c sm_cview2smap.c
+
+CFILES  =	anisolight.c alphablend.c alphablendnosort.c BRDF.c bumpmap.c curvedrefl.c \
+			dark.c displace.c envmap.c glossmap.c highlight.c  lightmap2d.c \
+			lighttessel.c materials.c mirror.c multispheremap.c perspective.c \
+			projshadow.c screendoor.c shadowvol.c shadtex.c $(SPHERE_MAP_CFILES) \
+			spheres.c spheremap.c spotlight.c triangles.c screendoor2.c
+
+TARGETS	= $(CFILES:.c=.exe)
+LCFLAGS	= $(cflags) $(cdebug) -I../util -I$(GLUT) -DWIN32
+LLDLIBS	= $(lflags) $(ldebug) $(OPENGL) $(guilibs)
+
+default	: $(TARGETS)
+
+clean	:
+	@del *.obj
+
+clobber	: clean
+	@del *.exe
+
+$(TARGETS): $*.obj
+        $(link) -out:$@ $** $(LLDLIBS)
+
+.c.obj	: 
+	$(CC) $(LCFLAGS) $<
+
+# dependencies (must come AFTER inference rules)
+bumpmap.exe	\
+displace.exe	\
+glossmap.exe \
+envmap.exe	\
+highlight.exe	\
+lightmap2d.exe	\
+mirror.exe	\
+multispheremap.exe	\
+projshadow.exe	\
+shadtex.exe	\
+spheremap.exe	\
+		: texture.obj
+
+vienvmap.exe : getopt.obj
+
+texture.obj	: ../util/texture.c
+	$(CC) $(LCFLAGS) ../util/texture.c
+
+sm_cview2smap.exe: sm_drawmesh.obj sm_makemesh.obj

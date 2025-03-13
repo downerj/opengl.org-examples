@@ -1,0 +1,21 @@
+# overrride with: make "CFLAGS = <whatever>" <target>
+SHELL = /bin/sh
+CFLAGS = -g -I../util -Wall
+LIBS = -lglut32 -lglu32 -lopengl32
+
+PROGS = convolve interp luminance noise saturation sbias stretch warp
+PROGS:=$(PROGS:=.exe)
+
+.SUFFIXES: .exe
+
+all: $(PROGS)
+
+.c.exe:	../util/texture.h ../util/texture.c
+	gcc $(CFLAGS) -o $@ $< ../util/texture.c $(LIBS)
+
+clean:
+	- rm -f *.o
+	@for file in $(PROGS) dummy_file ; do                 \
+		if [ -x $$file ]; then rm -f $$file; fi;       \
+	done
+

@@ -1,0 +1,42 @@
+##!nmake
+
+!include <win32.mak>
+
+OPENGL = glut32.lib glu32.lib opengl32.lib
+GLUT = "c:/PROGRA~1/devstudio/vc/include/GL"
+
+CFILES  = bubble.c cloud.c cloudlayer.c \
+	  explode.c fire.c lightpoint.c particle.c \
+	  rain.c smoke.c snow.c texmovie.c \
+	  underwater.c water.c vapor.c \
+     stars.c campfire.c 
+
+TARGETS	= $(CFILES:.c=.exe)
+LCFLAGS	= $(cflags) $(cdebug) -I../util -I$(GLUT) -DWIN32
+LLDLIBS	= $(lflags) $(ldebug) $(OPENGL) $(guilibs)
+
+default	: $(TARGETS)
+
+clean	:
+	@del *.obj
+
+clobber	: clean
+	@del *.exe
+
+$(TARGETS): $*.obj
+        $(link) -out:$@ $** $(LLDLIBS)
+
+.c.obj	: 
+	$(CC) $(LCFLAGS) $<
+
+# dependencies (must come AFTER inference rules)
+$(TARGETS) : texture.obj
+campfire.exe : sm.obj d.obj
+
+
+texture.obj	: ../util/texture.c
+	$(CC) $(LCFLAGS) ../util/texture.c
+sm.obj	: sm.c
+	$(CC) $(LCFLAGS) sm.c
+d.obj	: d.c
+	$(CC) $(LCFLAGS) d.c

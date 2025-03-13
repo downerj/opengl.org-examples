@@ -1,0 +1,25 @@
+# overrride with: make "CFLAGS = <whatever>" <target>
+SHELL = /bin/sh
+CFLAGS = -g -I../util -Wall
+LIBS = -lglut32 -lglu32 -lopengl32
+
+PROGS = airbrush npr hatch vpaint textext glow stroketext impressionist \
+	overlap zcomposite composite textile dither
+PROGS:=$(PROGS:=.exe)
+
+.SUFFIXES: .exe
+
+all: $(PROGS)
+
+.c.exe:	../util/texture.h ../util/texture.c
+	gcc $(CFLAGS) -o $@ $< ../util/texture.c $(LIBS)
+
+textext.exe: textext.c textmap.c
+	gcc $(CFLAGS) -o $@ textext.c textmap.c ../util/texture.c $(LIBS)
+
+clean:
+	- rm -f *.o
+	@for file in $(PROGS) dummy_file ; do                 \
+		if [ -x $$file ]; then rm -f $$file; fi;       \
+	done
+

@@ -1,0 +1,10 @@
+#!/bin/sh
+#\
+exec imgtcl $0 $*
+
+echo copying [lindex $argv 0] to [lindex $argv 1] 
+ilfileimgopen f [lindex $argv 0]
+ilmergeimg3 merge f f
+ilfileimgcreate la [lindex $argv 1] merge
+la copy merge
+la delete

@@ -1,0 +1,260 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <GL/glut.h>
+
+#define CHECK_ERROR(str)                                           \
+{                                                                  \
+    GLenum error;                                                  \
+    if(error = glGetError())                                       \
+       printf("GL Error: %s (%s)\n", gluErrorString(error), str);  \
+}
+
+int winWidth = 512;
+int winHeight = 512;
+GLboolean smooth = GL_FALSE;
+GLboolean dblbuf = GL_TRUE;
+GLfloat objangle[2] = {0.f, 0.f};
+GLfloat scale = 1.f;
+int active;
+
+enum {X, Y, Z};
+enum {OBJ_ANGLE, OBJ_SCALE};
+
+typedef struct { /* structure to hold line strip data */
+    int count; /* number of vertices (assume 3 GLfloats) */
+    GLfloat *verts; /* pointer to array of vertices */
+} Strip;
+
+int strip_count = 0; /* number of line strips */
+Strip *strips; /* pointer to array of line strips */
+
+/* load data structure from file */
+enum {VERTS, END};
+
+
+void
+reshape(int wid, int ht)
+{
+    winWidth = wid;
+    winHeight = ht;
+    glViewport(0, 0, wid, ht);
+}
+
+void
+motion(int x, int y)
+{
+    switch(active) {
+    case OBJ_ANGLE:
+	objangle[X] = (x - winWidth/2) * 360./winWidth;
+	objangle[Y] = (y - winHeight/2) * 360./winHeight;
+	glutPostRedisplay();
+	break;
+    case OBJ_SCALE:
+	scale = x * 3./winWidth;
+	objangle[Y] = (y - winHeight/2) * 360./winHeight;
+	glutPostRedisplay();
+	break;
+    }
+}
+
+void
+mouse(int button, int state, int x, int y)
+{
+    if(state == GLUT_DOWN)
+	switch(button) {
+	case GLUT_LEFT_BUTTON: /* rotate the object */
+	    active = OBJ_ANGLE;
+	    motion(x, y);
+	    break;
+	case GLUT_RIGHT_BUTTON: /* scale the object */
+	    active = OBJ_SCALE;
+	    motion(x, y);
+	    break;
+	}
+}
+
+
+/*ARGSUSED*/
+void key(unsigned char key, int x, int y)
+{
+    static int fog;
+    switch(key) {
+    case 's': /* toggle line smoothing */
+	if(smooth) {
+	    glDisable(GL_LINE_SMOOTH);
+	    glDisable(GL_BLEND);
+	    smooth = GL_FALSE;
+	    printf("Turn off OpenGL line smoothing\n");
+	} else {
+	    glEnable(GL_LINE_SMOOTH);
+	    glEnable(GL_BLEND);
+	    printf("Turn on OpenGL line smoothing\n");
+	    smooth = GL_TRUE;
+	}
+	glutPostRedisplay();
+	break;
+    case 'c':
+	if (fog ^= 1) {
+	    glEnable(GL_FOG);
+	    printf("Turn on depth cue\n");
+	} else {
+	    glDisable(GL_FOG);
+	    printf("Turn off depth cue\n");
+	}
+	glutPostRedisplay();
+	break;
+    case '\033':
+	exit(0);
+	break;
+    default:
+	fprintf(stderr, "Keyboard commands:\n\n"
+		"c - toggle depth cue \n"
+		"s - toggle smooth line mode\n");
+	break;
+    }
+
+}
+
+
+void
+loader(char *fname)
+{
+    FILE *fp;
+    GLfloat x, y, z;
+    int state = END;
+    int count;
+    int bufcount;
+    GLfloat *temp;
+
+
+    if ((fp = fopen(fname, "r")) == NULL) {
+	perror(fname);
+	exit(1);
+    }
+
+    /* hack: should compute number of strips */
+    strips = (Strip *)malloc(1000 * sizeof(Strip));
+    temp = (GLfloat *)malloc(1000 * 3 * sizeof(GLfloat));
+
+    while(!feof(fp)) {
+	switch(state) {
+	case END:
+	    count = fscanf(fp, " v");
+	    if(count < 0) /* hit eof */
+		break;
+	    bufcount = 0;
+	    state = VERTS;
+	    break;
+	case VERTS:
+	    count = fscanf(fp, " %f %f %f", &x, &y, &z);
+	    if(count == 3) {
+		temp[bufcount * 3] = x;
+		temp[bufcount * 3 + 1] = y;
+		temp[bufcount * 3 + 2] = z;
+		bufcount++;
+	    } else {
+		fscanf(fp, " e");
+		strips[strip_count].verts = 
+		    (GLfloat *)malloc(sizeof(GLfloat) * 3 * bufcount);
+		memcpy(strips[strip_count].verts, temp, 
+		       sizeof(GLfloat) *bufcount * 3);
+		strips[strip_count].count = bufcount;
+		strip_count++;
+		state = END;
+	    }
+	    break;
+	}
+    }
+    fclose(fp);
+    free(temp);
+}
+
+void redraw()
+{
+    int s, v;
+    int nverts;
+
+    glClear(GL_COLOR_BUFFER_BIT);
+
+    glPushMatrix();
+    glRotatef(objangle[X], 0.f, 1.f, 0.f); /* rotate object */
+    glRotatef(objangle[Y], 1.f, 0.f, 0.f);
+    glScalef(scale, scale, scale);
+
+    for(s = 0; s < strip_count; s++) {
+	glBegin(GL_LINE_STRIP);
+	nverts = strips[s].count;
+	for(v = 0; v < nverts; v++)
+	    glVertex3fv(&strips[s].verts[v * 3]);
+	glEnd();
+    }
+    glPopMatrix();
+
+    if(dblbuf)
+	glutSwapBuffers(); 
+    else
+	glFlush(); 
+
+    CHECK_ERROR("OpenGL Error in redraw()");
+}
+
+void menu(int option) {
+    key((unsigned char)option, 0, 0);
+}
+
+void main(int argc, char **argv)
+{
+    glutInit(&argc, argv);
+    glutInitWindowSize(winWidth, winHeight);
+    if(argc > 1) {
+	char *args = argv[1];
+	GLboolean done = GL_FALSE;
+	while(!done) {
+	    switch(*args) {
+	    case 's': /* single buffer */
+		printf("Single Buffered\n");
+		dblbuf = GL_FALSE;
+		break;
+	    case '-': /* do nothing */
+		break;
+	    case 0:
+		done = GL_TRUE;
+		break;
+	    }
+	    args++;
+	}
+    }
+    if(dblbuf)
+	glutInitDisplayMode(GLUT_RGBA|GLUT_DOUBLE);
+    else
+	glutInitDisplayMode(GLUT_RGBA);
+
+    (void)glutCreateWindow("load and draw a wireframe image");
+    glutDisplayFunc(redraw);
+    glutReshapeFunc(reshape);
+    glutKeyboardFunc(key);
+    glutMotionFunc(motion);
+    glutMouseFunc(mouse);
+
+#if 0
+    glutCreateMenu(menu);
+    glutAddMenuEntry("toggle smooth lines('s')", 's');
+    glutAddMenuEntry("toggle depth cue ('c')", 'c');
+    glutAttachMenu(GLUT_RIGHT_BUTTON);
+#endif
+
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    loader("../../data/f15.data");
+
+    glFogi(GL_FOG_MODE, GL_LINEAR);
+    glFogf(GL_FOG_START, 0.f);
+    glFogf(GL_FOG_END, 1.f);
+    key('c', 0, 0);
+    key('s', 0, 0);
+
+    CHECK_ERROR("OpenGL Error in main()");
+
+    glutMainLoop();
+}

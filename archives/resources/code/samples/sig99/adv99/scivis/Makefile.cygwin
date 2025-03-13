@@ -1,0 +1,24 @@
+# overrride with: make "CFLAGS = <whatever>" <target>
+SHELL = /bin/sh
+CFLAGS = -g -I../util -Wall
+LIBS = -lglut32 -lglu32 -lopengl32
+
+PROGS = illumlines lic vol2dtex vol3dtex terrain plate voronoi
+PROGS:=$(PROGS:=.exe)
+
+.SUFFIXES: .exe
+
+all: $(PROGS)
+
+.c.exe:	../util/texture.h ../util/texture.c
+	gcc $(CFLAGS) -o $@ $< ../util/texture.c $(LIBS)
+
+terrain.exe:	terrain.o curve.o noise.o
+	gcc $(CFLAGS) -o $@ terrain.o curve.o noise.o ../util/texture.c $(LIBS)
+
+clean:
+	- rm -f *.o
+	@for file in $(PROGS) dummy_file ; do                 \
+		if [ -x $$file ]; then rm -f $$file; fi;       \
+	done
+

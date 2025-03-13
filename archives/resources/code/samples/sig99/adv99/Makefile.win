@@ -1,0 +1,41 @@
+##!nmake
+
+!include <win32.mak>
+
+default:	
+		cd cad
+		nmake -f Makefile.win $@
+		cd ..\effects
+		nmake -f Makefile.win $@
+		cd ..\imaging
+		nmake -f Makefile.win $@
+		cd ..\natural
+		nmake -f Makefile.win $@
+		cd ..\production
+		nmake -f Makefile.win $@
+		cd ..\scivis
+		nmake -f Makefile.win $@
+		cd ..\shading
+		nmake -f Makefile.win $@
+		cd ..\vissim
+		nmake -f Makefile.win $@
+		cd ..
+
+clean clobber:
+		cd cad
+		nmake -f Makefile.win $@
+		cd ..\effects
+		nmake -f Makefile.win $@
+		cd ..\imaging
+		nmake -f Makefile.win $@
+		cd ..\natural
+		nmake -f Makefile.win $@
+		cd ..\production
+		nmake -f Makefile.win $@
+		cd ..\scivis
+		nmake -f Makefile.win $@
+		cd ..\shading
+		nmake -f Makefile.win $@
+		cd ..\vissim
+		nmake -f Makefile.win $@
+		cd ..
